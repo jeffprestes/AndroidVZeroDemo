@@ -1,6 +1,8 @@
 package org.battlehack.demo.jeffprestes.androidvzerodemo;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -106,8 +108,17 @@ public class BraintreeDemo extends Activity {
         httpClient.post(SERVER_URL + "/checkout.php", requestParams, new TextHttpResponseHandler() {
             @Override
             public void onSuccess(String response)    {
-                Toast.makeText(BraintreeDemo.this, "Payment status: " + response, Toast.LENGTH_LONG).show();
-                Toast.makeText(BraintreeDemo.this, "Payment status: " + response, Toast.LENGTH_LONG).show();
+                final AlertDialog msgAlert = new AlertDialog.Builder(BraintreeDemo.this)
+                                        .setMessage(response)
+                                        .setPositiveButton(" OK ", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                    dialogInterface.dismiss();
+                                            }
+                                        })
+                                        .create();
+                msgAlert.show();
+
                 Button payBtn = (Button) findViewById(R.id.btnPay);
                 payBtn.setText("Buy it AGAIN!");
             }
