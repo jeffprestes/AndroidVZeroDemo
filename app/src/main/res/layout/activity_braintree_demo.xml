@@ -29,6 +29,7 @@
             android:layout_height="wrap_content"
             android:text="Buy a copy of this Picture"
             android:id="@+id/btnPay"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:enabled="false" />
     </LinearLayout>
 </RelativeLayout>
