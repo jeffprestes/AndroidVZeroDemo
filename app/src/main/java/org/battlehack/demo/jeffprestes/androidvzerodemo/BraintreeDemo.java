@@ -38,7 +38,13 @@ public class BraintreeDemo extends Activity {
     private String getClientToken() {
         Log.i("BraintreeDemoServerUrl", SERVER_URL + "/token.php");
         httpClient.get(SERVER_URL + "/token.php", new TextHttpResponseHandler() {
-            public void onSuccess(String response) {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Toast.makeText(getApplicationContext(),"Failure when try to get Payment Gateway Token", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, org.apache.http.Header[] headers, String response) {
                 clientToken = response;
                 findViewById(R.id.btnPay).setEnabled(true);
             }
@@ -105,25 +111,27 @@ public class BraintreeDemo extends Activity {
         requestParams.put("amount", "1000");
         Log.i("BraintreeDemoServerUrl", "********** Before the Call **********");
 
-        httpClient.post(SERVER_URL + "/checkout.php", requestParams, new TextHttpResponseHandler() {
+        httpClient.post(SERVER_URL + "/checkout.php", requestParams, new TextHttpResponseHandler()  {
+
             @Override
-            public void onSuccess(String response)    {
+            public void onSuccess(int statusCode, Header[] headers, String response) {
                 final AlertDialog msgAlert = new AlertDialog.Builder(BraintreeDemo.this)
-                                        .setMessage(response)
-                                        .setPositiveButton(" OK ", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                    dialogInterface.dismiss();
-                                            }
-                                        })
-                                        .create();
+                        .setMessage(response)
+                        .setPositiveButton(" OK ", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .create();
                 msgAlert.show();
 
                 Button payBtn = (Button) findViewById(R.id.btnPay);
                 payBtn.setText("Buy it AGAIN!");
             }
+
             @Override
-            public void onFailure(String response, Throwable e)     {
+            public void onFailure(int statusCode, Header[] headers, String response, Throwable e)     {
                 Toast.makeText(BraintreeDemo.this, "Payment has not been processed. Reason: " + response, Toast.LENGTH_LONG).show();
             }
         });
