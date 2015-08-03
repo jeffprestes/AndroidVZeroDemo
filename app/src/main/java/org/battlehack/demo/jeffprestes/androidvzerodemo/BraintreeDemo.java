@@ -1,13 +1,18 @@
 package org.battlehack.demo.jeffprestes.androidvzerodemo;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.braintreepayments.api.Braintree;
+import com.braintreepayments.api.dropin.BraintreePaymentActivity;
+import com.braintreepayments.api.dropin.Customization;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
 
@@ -17,15 +22,15 @@ import org.w3c.dom.ProcessingInstruction;
 
 public class BraintreeDemo extends Activity {
 
-    private String clientToken;
-
     //Define here the URL root of your ServerSide
     private static final String SERVER_URL = "https://www.novatrix.com.br/bhdemo/";
 
     private static final String TAG = "BraintreeDemo";
 
-    private AsyncHttpClient httpClient = new AsyncHttpClient();
+    private static final int REQUEST_CODE = Menu.FIRST;
 
+    private String clientToken;
+    private AsyncHttpClient httpClient = new AsyncHttpClient();
 
 
     @Override
@@ -84,5 +89,25 @@ public class BraintreeDemo extends Activity {
                 Log.d(TAG, "Token obtained: " + clientToken);
             }
         });
+    }
+
+
+    /**
+     * Call Braintree's DropIn to buyer input this payment data
+     * @param android.view.View view
+     */
+    public void checkout(View v)        {
+        Customization.CustomizationBuilder cb = new Customization.CustomizationBuilder();
+        cb.primaryDescription("Awesome picture");
+        cb.secondaryDescription("Buying using BT DropIn for Android");
+        cb.amount("$ 1000");
+        cb.submitButtonText(" Pay ");
+        Customization customization = cb.build();
+
+        Intent intent = new Intent(this, BraintreePaymentActivity.class);
+        intent.putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, clientToken);
+        intent.putExtra(BraintreePaymentActivity.EXTRA_CUSTOMIZATION, customization);
+
+        startActivityForResult(intent, REQUEST_CODE);
     }
 }
